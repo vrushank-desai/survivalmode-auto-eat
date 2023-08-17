@@ -1,0 +1,6 @@
+Scriptname SMAutoMCMScript extends MCM_ConfigBase
+
+GlobalVariable Property Survival_ModeEnabled  Auto
+
+Message Property _SMAutoEatOffMessage Auto
+Message Property _SMAutoEatOnMessage Auto
