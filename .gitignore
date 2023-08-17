@@ -23,3 +23,6 @@
 
 ### MO2 ###
 meta.ini
+
+### Compiled papyrus scripts ###
+*.pex
