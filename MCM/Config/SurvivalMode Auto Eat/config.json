@@ -1,0 +1,64 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Exit-9B/MCM-Helper/main/docs/config.schema.json",
+  "modName": "SurvivalMode Auto Eat",
+  "displayName": "SurvivalMode Auto Eat",
+  "minMcmVersion": 13,
+  "pluginRequirements": [ "ccqdrsse001-survivalmode.esl" ],
+  "cursorFillMode": "topToBottom",
+  "content": [
+    {
+      "type": "hiddenToggle",
+      "groupControl": 1,
+      "valueOptions": {
+        "sourceType": "GlobalValue",
+        "sourceForm": "ccqdrsse001-survivalmode.esl|826"
+      }
+    },
+    {
+      "type": "header",
+      "text": "$SMAE_AutoEat_Header"
+    },
+    {
+      "type": "toggle",
+      "id": "bEnabled:AutoEat",
+      "valueOptions": {
+        "sourceType": "ModSettingBool",
+        "defaultValue": true
+      },
+      "text": "$SMAE_AutoEat_Enable",
+      "help": "$SMAE_AutoEat_Enable_Help",
+      "groupCondition": 1,
+      "groupBehavior": "disable"
+    },
+    {
+      "type": "keymap",
+      "id": "toggleAutoEatHotKey",
+      "text": "$SMAE_AutoEat_HotkeyToggle",
+      "groupCondition": 1,
+      "groupBehavior": "disable"
+    },
+    {
+      "type": "header",
+      "text": "$SMAE_SurivalMode_Header",
+      "position": 1
+    },
+    {
+      "type": "text",
+      "text": "$SMAE_SurivalMode_Status",
+      "valueOptions": {
+        "value": "$SMAE_SurivalMode_StatusEnabled"
+      },
+      "groupCondition": 1,
+      "groupBehavior": "skip"
+    },
+    {
+      "type": "text",
+      "text": "$SMAE_SurivalMode_Status",
+      "valueOptions": {
+        "value": "$SMAE_SurivalMode_StatusDisabled"
+      },
+      "groupCondition": {"NOT": 1},
+      "groupBehavior": "skip"
+    }
+  ]
+}
