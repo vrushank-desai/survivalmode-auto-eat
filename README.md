@@ -1,0 +1,1 @@
+# survivalmode-auto-eat
