@@ -1,0 +1,15 @@
+{
+   "$schema": "https://raw.githubusercontent.com/Exit-9B/MCM-Helper/main/docs/keybinds.schema.json",
+   "modName": "SurvivalMode Auto Eat",
+   "keybinds": [
+     {
+       "id": "toggleAutoEatHotKey",
+       "action": {
+         "type": "CallFunction",
+         "form": "SurvivalMode Auto Eat.esp|800",
+         "scriptName": "SMAutoMCMScript",
+         "function": "toggleAutoEat"
+       }
+     }
+   ]
+ }
