@@ -8,10 +8,7 @@ Race Property playerRace Auto hidden
 GlobalVariable Property Survival_ModeEnabled  Auto
 GlobalVariable Property Survival_HungerNeedValue  Auto
 
-GlobalVariable Property Survival_HungerRestoreVerySmallAmount  Auto
-GlobalVariable Property Survival_HungerRestoreSmallAmount  Auto
-GlobalVariable Property Survival_HungerRestoreMediumAmount  Auto
-GlobalVariable Property Survival_HungerRestoreLargeAmount  Auto
+GlobalVariable[] Property hungerRestoreAmounts Auto
 
 SPELL Property Survival_HungerStage0  Auto
 SPELL Property Survival_HungerStage1  Auto
@@ -20,10 +17,7 @@ SPELL Property Survival_HungerStage3  Auto
 SPELL Property Survival_HungerStage4  Auto
 SPELL Property Survival_HungerStage5  Auto
 
-FormList Property _SurvivalFood_VerySmall  Auto
-FormList Property _SurvivalFood_Small  Auto
-FormList Property _SurvivalFood_Medium  Auto
-FormList Property _SurvivalFood_Large  Auto
+FormList[] Property eligibleFoodList Auto
 
 FormList Property Survival_FoodRawMeat  Auto
 FormList Property Survival_FoodPoisoningImmuneRaces Auto
@@ -37,11 +31,11 @@ String Property foodConsumedText  Auto
 ; EVENT HANDLERS --------------------------------------------------------------
 
 Event OnInit()
-	GetPlayerRace()
+   GetPlayerRace()
 EndEvent
 
 Event OnUpdate()
-	AutoEat()
+   AutoEat()
 EndEvent
 
 ; STATES ----------------------------------------------------------------------
@@ -68,11 +62,24 @@ Function Eat()
    EndIf
 
    If (!IsPlayerHungry())
-      LogMessage("Player is not hungry.")
       return
    EndIf
 
-   Int consumedItemCount = GetConsumedItemCount(_SurvivalFood_VerySmall, Survival_HungerRestoreVerySmallAmount.GetValue() As Int)
+   Int index = 0
+   Int consumedItemCount = -1
+   Bool bBreak = False
+
+   While (index < eligibleFoodList.Length) && !bBreak
+
+      consumedItemCount = GetConsumedItemCount(eligibleFoodList[index], (hungerRestoreAmounts[index]).GetValue() As Int)
+
+      If (consumedItemCount == 1)
+         bBreak = True
+      EndIf
+
+      index += 1
+
+   EndWhile
 
    If (consumedItemCount == -1)
       _SMNoMoreFoodMessage.Show()
@@ -85,17 +92,10 @@ EndFunction
 Int Function GetConsumedItemCount(FormList foodItemList, int hungerReductionAmount=0)
 
    If (PlayerRef.GetItemCount(foodItemList) <= 0)
-      LogMessage("Player does not have any consumable food items")
-      return -1 ; NOT_FOUND
+      return 0 ; SKIP_CONSUMPTION
    EndIf
 
    Bool cannotContractFoodPoisoning = PlayerCannotContractFoodPoisoning()
-
-   If (cannotContractFoodPoisoning)
-      LogMessage("Player is immune to food poisoning.")
-   Else
-      LogMessage("Player is susceptible to food poisoning.")
-   EndIf
 
    Int i = 0
 
@@ -106,13 +106,16 @@ Int Function GetConsumedItemCount(FormList foodItemList, int hungerReductionAmou
 
          If ( (cannotContractFoodPoisoning || !Survival_FoodRawMeat.HasForm(consumable)) && PlayerRef.GetItemCount(consumable) > 0)
 
+            LogMessage("Current Hunger Level: " + Survival_HungerNeedValue.GetValueInt() + ", hungerReductionAmount: " + hungerReductionAmount)
+
             If (Survival_HungerNeedValue.GetValueInt() < hungerReductionAmount)
-               LogMessage("Player's hunger level is at acceptable level. Skipping consumption...")
-               return 0 ; FOUND_NOT_CONSUMED
+               return 0 ; SKIP_CONSUMPTION
             EndIf
 
             PlayerRef.EquipItem(consumable, abSilent=true)
+
             Debug.Notification(consumable.GetName() + foodConsumedText)
+
             return 1 ; FOUND_AND_CONSUMED
          EndIf
 
@@ -187,12 +190,12 @@ Bool Function ShouldAutoEat()
 
    ; Prevent auto eat during combat
    If (PlayerIsCurrentlyInCombat())
-      LogMessage("Player is in combat.")
+      LogMessage("Player is in combat. Food will not be consumed automatically.")
       return false
    EndIf
 
    If (PlayerRef.GetSleepState() != 0)
-      LogMessage("Player is going to sleep or is waking up.")
+      LogMessage("Player is going to sleep or is waking up. Food will not be consumed automatically.")
       return false
    EndIf
 
@@ -201,5 +204,5 @@ Bool Function ShouldAutoEat()
 EndFunction
 
 Function LogMessage(String sMessage)
-   Debug.Notification("[SMAE] - [State : " + GetState() + "] - " + sMessage)
+   Debug.Notification("[SMAE] - " + sMessage)
 EndFunction
