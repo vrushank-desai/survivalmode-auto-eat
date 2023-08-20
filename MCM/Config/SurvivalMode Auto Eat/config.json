@@ -51,23 +51,25 @@
     },
     {
       "type": "header",
-      "text": "$SMAE_SurivalMode_Header",
+      "text": "$SMAE_SurvivalMode_Header",
       "position": 1
     },
     {
       "type": "text",
-      "text": "$SMAE_SurivalMode_Status",
+      "text": "$SMAE_SurvivalMode_Status",
+      "help": "$SMAE_SurvivalMode_Status_Help",
       "valueOptions": {
-        "value": "$SMAE_SurivalMode_StatusEnabled"
+        "value": "$SMAE_SurvivalMode_StatusEnabled"
       },
       "groupCondition": 1,
       "groupBehavior": "skip"
     },
     {
       "type": "text",
-      "text": "$SMAE_SurivalMode_Status",
+      "text": "$SMAE_SurvivalMode_Status",
+      "help": "$SMAE_SurvivalMode_Status_Help",
       "valueOptions": {
-        "value": "$SMAE_SurivalMode_StatusDisabled"
+        "value": "$SMAE_SurvivalMode_StatusDisabled"
       },
       "groupCondition": {"NOT": 1},
       "groupBehavior": "skip"
