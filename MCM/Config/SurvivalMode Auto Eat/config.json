@@ -31,6 +31,18 @@
       "groupBehavior": "disable"
     },
     {
+      "type": "toggle",
+      "id": "bOverEatEnabled:AutoEat",
+      "valueOptions": {
+        "sourceType": "ModSettingBool",
+        "defaultValue": false
+      },
+      "text": "$SMAE_AutoEat_AllowOverEat",
+      "help": "$SMAE_AutoEat_AllowOverEat_Help",
+      "groupCondition": 1,
+      "groupBehavior": "disable"
+    },
+    {
       "type": "keymap",
       "id": "toggleAutoEatHotKey",
       "text": "$SMAE_AutoEat_HotkeyToggle",

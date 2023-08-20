@@ -27,6 +27,10 @@ Keyword Property Survival_DiseaseFoodPoisoningKeyword Auto
 Message Property _SMNoMoreFoodMessage Auto
 
 String Property foodConsumedText  Auto
+Bool Property noFoodMessageShown Auto
+
+; VARIABLES -------------------------------------------------------------------
+Bool itemFound = False
 
 ; EVENT HANDLERS --------------------------------------------------------------
 
@@ -66,22 +70,23 @@ Function Eat()
    EndIf
 
    Int index = 0
-   Int consumedItemCount = -1
-   Bool bBreak = False
+   itemFound = False
 
-   While (index < eligibleFoodList.Length) && !bBreak
+   SMAutoMCMScript mcmScript = (self As Form) As SMAutoMCMScript
+   Bool overEatEnabled = mcmScript.GetModSettingBool("bOverEatEnabled:AutoEat")
 
-      consumedItemCount = GetConsumedItemCount(eligibleFoodList[index], (hungerRestoreAmounts[index]).GetValue() As Int)
+   While (index < eligibleFoodList.Length)
 
-      If (consumedItemCount == 1)
-         bBreak = True
+      If (CouldConsumeFromList(eligibleFoodList[index], (hungerRestoreAmounts[index]).GetValue() As Int, overEatEnabled))
+         noFoodMessageShown = False
+         return
       EndIf
 
       index += 1
 
    EndWhile
 
-   If (consumedItemCount == -1)
+   If (!itemFound && !noFoodMessageShown)
       _SMNoMoreFoodMessage.Show()
    EndIf
 
@@ -89,10 +94,10 @@ EndFunction
 
 ; HELPER FUNCTIONS ------------------------------------------------------------
 
-Int Function GetConsumedItemCount(FormList foodItemList, int hungerReductionAmount=0)
+Bool Function CouldConsumeFromList(FormList foodItemList, int hungerReductionAmount=0, Bool overEatEnabled=False)
 
    If (PlayerRef.GetItemCount(foodItemList) <= 0)
-      return 0 ; SKIP_CONSUMPTION
+      return False
    EndIf
 
    Bool cannotContractFoodPoisoning = PlayerCannotContractFoodPoisoning()
@@ -106,17 +111,18 @@ Int Function GetConsumedItemCount(FormList foodItemList, int hungerReductionAmou
 
          If ( (cannotContractFoodPoisoning || !Survival_FoodRawMeat.HasForm(consumable)) && PlayerRef.GetItemCount(consumable) > 0)
 
+            itemFound = True
             LogMessage("Current Hunger Level: " + Survival_HungerNeedValue.GetValueInt() + ", hungerReductionAmount: " + hungerReductionAmount)
 
-            If (Survival_HungerNeedValue.GetValueInt() < hungerReductionAmount)
-               return 0 ; SKIP_CONSUMPTION
+            If (Survival_HungerNeedValue.GetValueInt() < hungerReductionAmount) && !overEatEnabled
+               return False
             EndIf
 
             PlayerRef.EquipItem(consumable, abSilent=true)
 
             Debug.Notification(consumable.GetName() + foodConsumedText)
 
-            return 1 ; FOUND_AND_CONSUMED
+            return True
          EndIf
 
          i += 1
@@ -125,7 +131,7 @@ Int Function GetConsumedItemCount(FormList foodItemList, int hungerReductionAmou
 
    EndWhile
 
-   return -1 ; NOT_FOUND
+   return False
 
 EndFunction
 
@@ -204,5 +210,5 @@ Bool Function ShouldAutoEat()
 EndFunction
 
 Function LogMessage(String sMessage)
-   Debug.Notification("[SMAE] - " + sMessage)
+   Debug.Trace("[SMAE] - " + sMessage)
 EndFunction
