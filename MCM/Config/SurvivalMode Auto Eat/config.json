@@ -59,7 +59,7 @@
       "text": "$SMAE_SurvivalMode_Status",
       "help": "$SMAE_SurvivalMode_Status_Help",
       "valueOptions": {
-        "value": "$SMAE_SurvivalMode_StatusEnabled"
+        "value": "$SMAE_StatusEnabled"
       },
       "groupCondition": 1,
       "groupBehavior": "skip"
@@ -69,7 +69,7 @@
       "text": "$SMAE_SurvivalMode_Status",
       "help": "$SMAE_SurvivalMode_Status_Help",
       "valueOptions": {
-        "value": "$SMAE_SurvivalMode_StatusDisabled"
+        "value": "$SMAE_StatusDisabled"
       },
       "groupCondition": {"NOT": 1},
       "groupBehavior": "skip"
