@@ -35,7 +35,6 @@ Bool itemFound = False
 ; EVENT HANDLERS --------------------------------------------------------------
 
 Event OnInit()
-   GetPlayerRace()
 EndEvent
 
 Event OnUpdate()
@@ -149,21 +148,6 @@ Bool Function PlayerCannotContractFoodPoisoning()
    return diseaseResistMult >= 1.0000 || Survival_FoodPoisoningImmuneRaces.HasForm(playerRace) || PlayerRef.HasEffectKeyword(Survival_DiseaseFoodPoisoningKeyword)
 EndFunction
 
-Bool Function PlayerIsCurrentlyInCombat()
-   ;/
-      https://www.creationkit.com/index.php?title=GetCombatState_-_Actor
-
-      This function is unreliable the first time it is called after a certain amount of time has passed.
-      You should call it on an empty line first before calling it for real.
-   /;
-
-   PlayerRef.GetCombatState()
-
-   ; 0 = Not in combat | 1 = In combat | 2 = Searching
-   return PlayerRef.GetCombatState() == 1
-
-EndFunction
-
 Bool Function IsPlayerHungry()
 
    If (PlayerRef.HasSpell(Survival_HungerStage0))
@@ -195,7 +179,7 @@ Bool Function ShouldAutoEat()
    EndIf
 
    ; Prevent auto eat during combat
-   If (PlayerIsCurrentlyInCombat())
+   If (PlayerRef.IsInCombat())
       LogMessage("Player is in combat. Food will not be consumed automatically.")
       return false
    EndIf
