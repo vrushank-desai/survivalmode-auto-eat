@@ -31,10 +31,17 @@ Bool Property noFoodMessageShown Auto
 
 ; VARIABLES -------------------------------------------------------------------
 Bool itemFound = False
+String[] hungerLevels
+SMAutoMCMScript mcmScript
 
 ; EVENT HANDLERS --------------------------------------------------------------
 
 Event OnInit()
+   hungerLevels = New String[2]
+   hungerLevels[0] = Survival_HungerStage0.GetName()
+   hungerLevels[1] = Survival_HungerStage1.GetName()
+
+   mcmScript = (self As Form) As SMAutoMCMScript
 EndEvent
 
 Event OnUpdate()
@@ -45,7 +52,7 @@ EndEvent
 
 State Busy
    Function AutoEat()
-      RegisterForSingleUpdate(1.0)
+      RegisterForSingleUpdate(2.0)
    EndFunction
 EndState
 
@@ -64,19 +71,19 @@ Function Eat()
       return
    EndIf
 
-   If (!IsPlayerHungry())
+   Bool targetWellFed = mcmScript.GetModSettingInt("iTargetLevel:AutoEat") == 0
+
+   If (!IsPlayerHungry(targetWellFed))
       return
    EndIf
 
    Int index = 0
    itemFound = False
 
-   SMAutoMCMScript mcmScript = (self As Form) As SMAutoMCMScript
-   Bool overEatEnabled = mcmScript.GetModSettingBool("bOverEatEnabled:AutoEat")
 
    While (index < eligibleFoodList.Length)
 
-      If (CouldConsumeFromList(eligibleFoodList[index], (hungerRestoreAmounts[index]).GetValue() As Int, overEatEnabled))
+      If (CouldConsumeFromList(eligibleFoodList[index], (hungerRestoreAmounts[index]).GetValue() As Int, targetWellFed))
          noFoodMessageShown = False
          return
       EndIf
@@ -91,9 +98,16 @@ Function Eat()
 
 EndFunction
 
+String[] Function GetHighestHungerLevels()
+   If (!hungerLevels)
+      PopulateHungerLevelDesc()
+   EndIf
+   return hungerLevels
+EndFunction
+
 ; HELPER FUNCTIONS ------------------------------------------------------------
 
-Bool Function CouldConsumeFromList(FormList foodItemList, int hungerReductionAmount=0, Bool overEatEnabled=False)
+Bool Function CouldConsumeFromList(FormList foodItemList, int hungerReductionAmount=0, Bool targetWellFed=False)
 
    If (PlayerRef.GetItemCount(foodItemList) <= 0)
       return False
@@ -113,7 +127,7 @@ Bool Function CouldConsumeFromList(FormList foodItemList, int hungerReductionAmo
             itemFound = True
             LogMessage("Current Hunger Level: " + Survival_HungerNeedValue.GetValueInt() + ", hungerReductionAmount: " + hungerReductionAmount)
 
-            If (Survival_HungerNeedValue.GetValueInt() < hungerReductionAmount) && !overEatEnabled
+            If (Survival_HungerNeedValue.GetValueInt() < hungerReductionAmount) && !targetWellFed
                return False
             EndIf
 
@@ -134,13 +148,9 @@ Bool Function CouldConsumeFromList(FormList foodItemList, int hungerReductionAmo
 
 EndFunction
 
-Function GetPlayerRace()
-   playerRace  = PlayerRef.GetRace()
-EndFunction
-
 Bool Function PlayerCannotContractFoodPoisoning()
    If (!playerRace)
-      GetPlayerRace()
+      playerRace  = PlayerRef.GetRace()
    EndIf
 
    Float diseaseResistMult = PlayerRef.GetActorValue("DiseaseResist") / 100.000
@@ -148,10 +158,14 @@ Bool Function PlayerCannotContractFoodPoisoning()
    return diseaseResistMult >= 1.0000 || Survival_FoodPoisoningImmuneRaces.HasForm(playerRace) || PlayerRef.HasEffectKeyword(Survival_DiseaseFoodPoisoningKeyword)
 EndFunction
 
-Bool Function IsPlayerHungry()
+Bool Function IsPlayerHungry(Bool targetWellFed=False)
 
    If (PlayerRef.HasSpell(Survival_HungerStage0))
-      return false
+      return False
+   EndIf
+
+   If (!targetWellFed && PlayerRef.HasSpell(Survival_HungerStage1))
+      return False
    EndIf
 
    return PlayerRef.HasSpell(Survival_HungerStage1) || \
@@ -167,30 +181,34 @@ Bool Function ShouldAutoEat()
    ; Do nothing if Survival Mode is turned off
    If (Survival_ModeEnabled.GetValue() != 1.0)
       LogMessage("Survival Mode is disabled.")
-      return false
+      return False
    EndIf
-
-   SMAutoMCMScript mcmScript = (self As Form) As SMAutoMCMScript
 
    ; Do nothing if auto-eat is disabled
    If (!mcmScript.GetModSettingBool("bEnabled:AutoEat"))
       LogMessage("Auto-eat is disabled.")
-      return false
+      return False
    EndIf
 
    ; Prevent auto eat during combat
    If (PlayerRef.IsInCombat())
       LogMessage("Player is in combat. Food will not be consumed automatically.")
-      return false
+      return False
    EndIf
 
    If (PlayerRef.GetSleepState() != 0)
       LogMessage("Player is going to sleep or is waking up. Food will not be consumed automatically.")
-      return false
+      return False
    EndIf
 
-   return true
+   return True
 
+EndFunction
+
+Function PopulateHungerLevelDesc()
+   hungerLevels = New String[2]
+   hungerLevels[0] = Survival_HungerStage0.GetName()
+   hungerLevels[1] = Survival_HungerStage1.GetName()
 EndFunction
 
 Function LogMessage(String sMessage)

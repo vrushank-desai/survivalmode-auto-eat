@@ -31,14 +31,14 @@
       "groupBehavior": "disable"
     },
     {
-      "type": "toggle",
-      "id": "bOverEatEnabled:AutoEat",
+      "type": "enum",
+      "id": "iTargetLevel:AutoEat",
       "valueOptions": {
-        "sourceType": "ModSettingBool",
-        "defaultValue": false
+        "sourceType": "ModSettingInt",
+        "defaultValue": 1
       },
-      "text": "$SMAE_AutoEat_AllowOverEat",
-      "help": "$SMAE_AutoEat_AllowOverEat_Help",
+      "text": "$SMAE_AutoEat_TargetLevel",
+      "help": "$SMAE_AutoEat_TargetLevel_Help",
       "groupCondition": 1,
       "groupBehavior": "disable"
     },

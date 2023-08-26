@@ -20,3 +20,11 @@ Function toggleAutoEat()
       _SMAutoEatOffMessage.Show()
    EndIf
 EndFunction
+
+; Event raised when the config menu is opened.
+Event OnConfigOpen()
+   parent.OnConfigOpen()
+   SMAutoScript mainScript = (self As Form) As SMAutoScript
+   SetMenuOptions("iTargetLevel:AutoEat", mainScript.GetHighestHungerLevels())
+   RefreshMenu()
+EndEvent
