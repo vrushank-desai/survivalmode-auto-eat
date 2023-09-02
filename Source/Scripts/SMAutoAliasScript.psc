@@ -1,7 +1,7 @@
 Scriptname SMAutoAliasScript extends ReferenceAlias
 
 Event OnInit()
-	resumeAutoEat()
+   resumeAutoEat()
 EndEvent
 
 Event OnPlayerLoadGame()
@@ -10,5 +10,6 @@ EndEvent
 
 Function resumeAutoEat()
    SMAutoScript questScript = GetOwningQuest() as SMAutoScript
+   questScript.noFoodMessageShown = False
    questScript.AutoEat()
 EndFunction
