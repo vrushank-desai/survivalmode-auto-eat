@@ -8,6 +8,12 @@ Race Property playerRace Auto hidden
 GlobalVariable Property Survival_ModeEnabled  Auto
 GlobalVariable Property Survival_HungerNeedValue  Auto
 
+;/
+   Index 0 = Survival_HungerRestoreVerySmallAmount
+   Index 1 = Survival_HungerRestoreSmallAmount
+   Index 2 = Survival_HungerRestoreMediumAmount
+   Index 3 = Survival_HungerRestoreLargeAmount
+/;
 GlobalVariable[] Property hungerRestoreAmounts Auto
 
 SPELL Property Survival_HungerStage0  Auto
@@ -17,10 +23,18 @@ SPELL Property Survival_HungerStage3  Auto
 SPELL Property Survival_HungerStage4  Auto
 SPELL Property Survival_HungerStage5  Auto
 
+;/
+   Index 0 = _SurvivalFood_VerySmall
+   Index 1 = _SurvivalFood_Small
+   Index 2 = _SurvivalFood_Medium
+   Index 3 = _SurvivalFood_Large
+/;
 FormList[] Property eligibleFoodList Auto
 
 FormList Property Survival_FoodRawMeat  Auto
 FormList Property Survival_FoodPoisoningImmuneRaces Auto
+
+FormList Property _SurvivalFood_Alcohol Auto
 
 Keyword Property Survival_DiseaseFoodPoisoningKeyword Auto
 
@@ -52,7 +66,7 @@ EndEvent
 
 State Busy
    Function AutoEat()
-      RegisterForSingleUpdate(2.0)
+      RegisterForSingleUpdate(1.0)
    EndFunction
 EndState
 
@@ -77,9 +91,16 @@ Function Eat()
       return
    EndIf
 
-   Int index = 0
+   Bool allowAlcohol = mcmScript.GetModSettingBool("bAllowAlcohol:AutoEat")
+
    itemFound = False
 
+   If (allowAlcohol && CouldConsumeFromList(_SurvivalFood_Alcohol, (hungerRestoreAmounts[0]).GetValue() As Int, targetWellFed))
+      noFoodMessageShown = False
+      return
+   EndIf
+
+   Int index = 0
 
    While (index < eligibleFoodList.Length)
 

@@ -43,6 +43,18 @@
       "groupBehavior": "disable"
     },
     {
+      "type": "toggle",
+      "id": "bAllowAlcohol:AutoEat",
+      "valueOptions": {
+        "sourceType": "ModSettingBool",
+        "defaultValue": false
+      },
+      "text": "$SMAE_AutoEat_AllowAlcohol",
+      "help": "$SMAE_AutoEat_AllowAlcohol_Help",
+      "groupCondition": 1,
+      "groupBehavior": "disable"
+    },
+    {
       "type": "keymap",
       "id": "toggleAutoEatHotKey",
       "text": "$SMAE_AutoEat_HotkeyToggle",
