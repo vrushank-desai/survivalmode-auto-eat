@@ -65,7 +65,6 @@ EndEvent
 
 State Busy
    Function AutoEat()
-      RegisterForSingleUpdate(1.0)
    EndFunction
 EndState
 
@@ -74,7 +73,7 @@ EndState
 Function AutoEat()
    GoToState("Busy")
    Eat()
-   RegisterForSingleUpdate(1.0)
+   RegisterForSingleUpdate(mcmScript.GetModSettingFloat("fPollingInterval:Extra"))
    GoToState("")
 EndFunction
 
