@@ -85,6 +85,26 @@
       },
       "groupCondition": {"NOT": 1},
       "groupBehavior": "skip"
+    },
+    {
+      "type": "header",
+      "text": "$SMAE_Extra"
+    },
+    {
+      "type": "slider",
+      "id": "fPollingInterval:Extra",
+      "text": "$SMAE_Extra_PollingInterval",
+      "help": "$SMAE_Extra_PollingInterval_Help",
+      "valueOptions": {
+        "sourceType": "ModSettingFloat",
+        "min": 1.0,
+        "max": 5.0,
+        "step": 0.5,
+        "formatString": "Every {1} second(s)",
+        "defaultValue": 2.0
+      },
+      "groupCondition": 1,
+      "groupBehavior": "disable"
     }
   ]
 }

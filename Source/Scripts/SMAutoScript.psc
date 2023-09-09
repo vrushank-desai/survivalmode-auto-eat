@@ -48,13 +48,12 @@ Bool itemFound = False
 String[] hungerLevels
 SMAutoMCMScript mcmScript
 
+String AUTO_EAT_IGNORE_KEYWORD = "Survival_IgnoreAutoEat"
+
 ; EVENT HANDLERS --------------------------------------------------------------
 
 Event OnInit()
-   hungerLevels = New String[2]
-   hungerLevels[0] = Survival_HungerStage0.GetName()
-   hungerLevels[1] = Survival_HungerStage1.GetName()
-
+   PopulateHungerLevelDesc()
    mcmScript = (self As Form) As SMAutoMCMScript
 EndEvent
 
@@ -66,7 +65,6 @@ EndEvent
 
 State Busy
    Function AutoEat()
-      RegisterForSingleUpdate(1.0)
    EndFunction
 EndState
 
@@ -75,7 +73,7 @@ EndState
 Function AutoEat()
    GoToState("Busy")
    Eat()
-   RegisterForSingleUpdate(1.0)
+   RegisterForSingleUpdate(mcmScript.GetModSettingFloat("fPollingInterval:Extra"))
    GoToState("")
 EndFunction
 
@@ -141,7 +139,8 @@ Bool Function CouldConsumeFromList(FormList foodItemList, int hungerReductionAmo
    While (i < foodItemList.GetSize())
       Potion consumable = foodItemList.GetAt(i) As Potion
 
-      If (consumable && consumable.IsFood())
+      ; Allow only items flagged as food item and not poison or ignored
+      If (consumable && consumable.IsFood() && !(consumable.IsPoison()  || consumable.HasKeywordString(AUTO_EAT_IGNORE_KEYWORD)))
 
          If ( (cannotContractFoodPoisoning || !Survival_FoodRawMeat.HasForm(consumable)) && PlayerRef.GetItemCount(consumable) > 0)
 
