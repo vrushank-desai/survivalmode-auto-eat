@@ -102,7 +102,9 @@
         "step": 0.5,
         "formatString": "Every {1} second(s)",
         "defaultValue": 2.0
-      }
+      },
+      "groupCondition": 1,
+      "groupBehavior": "disable"
     }
   ]
 }
