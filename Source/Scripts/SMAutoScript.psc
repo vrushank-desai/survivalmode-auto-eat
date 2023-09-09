@@ -139,8 +139,8 @@ Bool Function CouldConsumeFromList(FormList foodItemList, int hungerReductionAmo
    While (i < foodItemList.GetSize())
       Potion consumable = foodItemList.GetAt(i) As Potion
 
-      ; Allow only items flagged as food item and not ignored
-      If (consumable && consumable.IsFood() && !consumable.HasKeywordString(AUTO_EAT_IGNORE_KEYWORD))
+      ; Allow only items flagged as food item and not poison or ignored
+      If (consumable && consumable.IsFood() && !(consumable.IsPoison()  || consumable.HasKeywordString(AUTO_EAT_IGNORE_KEYWORD)))
 
          If ( (cannotContractFoodPoisoning || !Survival_FoodRawMeat.HasForm(consumable)) && PlayerRef.GetItemCount(consumable) > 0)
 
