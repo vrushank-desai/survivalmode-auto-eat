@@ -62,6 +62,18 @@
       "groupBehavior": "disable"
     },
     {
+      "type": "toggle",
+      "id": "bUseWhitelistOrFavorite:AutoEat",
+      "valueOptions": {
+        "sourceType": "ModSettingBool",
+        "defaultValue": false
+      },
+      "text": "$SMAE_AutoEat_UseWhiteListOrFavorite",
+      "help": "$SMAE_AutoEat_UseWhiteListOrFavorite_Help",
+      "groupCondition": 1,
+      "groupBehavior": "disable"
+    },
+    {
       "type": "header",
       "text": "$SMAE_SurvivalMode_Header",
       "position": 1
