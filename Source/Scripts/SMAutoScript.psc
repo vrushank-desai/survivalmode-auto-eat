@@ -43,6 +43,8 @@ Message Property _SMNoMoreFoodMessage Auto
 String Property foodConsumedText  Auto
 Bool Property noFoodMessageShown Auto
 
+FormList Property _SurvivalFood_Whitelist Auto
+
 ; VARIABLES -------------------------------------------------------------------
 Bool itemFound = False
 String[] hungerLevels
@@ -140,10 +142,9 @@ Bool Function CouldConsumeFromList(FormList foodItemList, int hungerReductionAmo
       Potion consumable = foodItemList.GetAt(i) As Potion
 
       ; Allow only items flagged as food item and not poison or ignored
-      If (consumable && consumable.IsFood() && !(consumable.IsPoison()  || consumable.HasKeywordString(AUTO_EAT_IGNORE_KEYWORD)))
+      If (consumable && consumable.IsFood() && CanBeConsumed(consumable))
 
          If ( (cannotContractFoodPoisoning || !Survival_FoodRawMeat.HasForm(consumable)) && PlayerRef.GetItemCount(consumable) > 0)
-
             itemFound = True
             LogMessage("Current Hunger Level: " + Survival_HungerNeedValue.GetValueInt() + ", hungerReductionAmount: " + hungerReductionAmount)
 
@@ -158,9 +159,9 @@ Bool Function CouldConsumeFromList(FormList foodItemList, int hungerReductionAmo
             return True
          EndIf
 
-         i += 1
-
       EndIf
+
+      i += 1
 
    EndWhile
 
@@ -218,6 +219,25 @@ Bool Function ShouldAutoEat()
 
    If (PlayerRef.GetSleepState() != 0)
       LogMessage("Player is going to sleep or is waking up. Food will not be consumed automatically.")
+      return False
+   EndIf
+
+   return True
+
+EndFunction
+
+Bool Function CanBeConsumed(Potion consumable)
+
+   If (consumable.IsPoison()  || consumable.HasKeywordString(AUTO_EAT_IGNORE_KEYWORD))
+      LogMessage(consumable.GetName() + " is flagged as a poison or is marked as ignored. Ignoring...")
+      return False
+   EndIf
+
+   Bool useWhitelistOrFavorite = mcmScript.GetModSettingBool("bUseWhitelistOrFavorite:AutoEat")
+   Bool isConsumableWhiteListed = Game.IsObjectFavorited(consumable) || _SurvivalFood_Whitelist.Find(consumable) > 0
+
+   If (useWhitelistOrFavorite && !isConsumableWhiteListed)
+      LogMessage("Whitelisting is enabled and " + consumable.GetName() + " is not whitelisted or marked as favorite. Ignoring...")
       return False
    EndIf
 
