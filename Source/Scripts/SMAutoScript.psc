@@ -114,7 +114,13 @@ Function Eat()
    EndWhile
 
    If (!itemFound && !noFoodMessageShown)
-      _SMNoMoreFoodMessage.Show()
+
+      Bool disableNotification = mcmScript.GetModSettingBool("bDisableNotification:AutoEat")
+
+      If (!disableNotification)
+         _SMNoMoreFoodMessage.Show()
+      EndIf
+
    EndIf
 
 EndFunction
