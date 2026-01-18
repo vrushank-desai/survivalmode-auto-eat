@@ -74,6 +74,18 @@
       "groupBehavior": "disable"
     },
     {
+      "type": "toggle",
+      "id": "bDisableNotification:AutoEat",
+      "valueOptions": {
+        "sourceType": "ModSettingBool",
+        "defaultValue": false
+      },
+      "text": "$SMAE_AutoEat_DisableNotification",
+      "help": "$SMAE_AutoEat_DisableNotification_Help",
+      "groupCondition": 1,
+      "groupBehavior": "disable"
+    },
+    {
       "type": "header",
       "text": "$SMAE_SurvivalMode_Header",
       "position": 1
