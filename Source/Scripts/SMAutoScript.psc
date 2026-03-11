@@ -217,6 +217,12 @@ Bool Function ShouldAutoEat()
       return False
    EndIf
 
+   ; Do nothing during cutscenes
+   if !Game.IsMenuControlsEnabled()
+		LogMessage("Menu controls are disabled. Food will not be consumed automatically.")
+      return False
+	endIf
+
    ; Prevent auto eat during combat
    If (PlayerRef.IsInCombat())
       LogMessage("Player is in combat. Food will not be consumed automatically.")
