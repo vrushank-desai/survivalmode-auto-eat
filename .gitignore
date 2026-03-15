@@ -26,3 +26,6 @@ meta.ini
 
 ### Compiled papyrus scripts ###
 *.pex
+
+### kDiff backups ###
+*.orig
