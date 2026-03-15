@@ -91,27 +91,61 @@ Function Eat()
       return
    EndIf
 
+   Bool lessFillingFirst = mcmScript.GetModSettingInt("iFoodPriority:AutoEat") == 0
    Bool allowAlcohol = mcmScript.GetModSettingBool("bAllowAlcohol:AutoEat")
 
    itemFound = False
 
-   If (allowAlcohol && CouldConsumeFromList(_SurvivalFood_Alcohol, (hungerRestoreAmounts[0]).GetValue() As Int, targetWellFed))
-      noFoodMessageShown = False
-      return
-   EndIf
+   ; Less Filling First ----------------------
 
-   Int index = 0
+   If (lessFillingFirst)
 
-   While (index < eligibleFoodList.Length)
+      LogMessage("Less filling items prioritized")
 
-      If (CouldConsumeFromList(eligibleFoodList[index], (hungerRestoreAmounts[index]).GetValue() As Int, targetWellFed))
+      If (allowAlcohol && CouldConsumeFromList(_SurvivalFood_Alcohol, (hungerRestoreAmounts[0]).GetValue() As Int, targetWellFed))
          noFoodMessageShown = False
          return
       EndIf
 
-      index += 1
+      Int index = 0
 
-   EndWhile
+      While (index < eligibleFoodList.Length)
+
+         If (CouldConsumeFromList(eligibleFoodList[index], (hungerRestoreAmounts[index]).GetValue() As Int, targetWellFed))
+            noFoodMessageShown = False
+            return
+         EndIf
+
+         index += 1
+
+      EndWhile
+
+   ; More Filling First ----------------------
+
+   Else
+
+      LogMessage("More filling items prioritized")
+
+      Int index = eligibleFoodList.Length - 1
+
+      While (index >= 0)
+
+         If (CouldConsumeFromList(eligibleFoodList[index], (hungerRestoreAmounts[index]).GetValue() As Int, targetWellFed))
+            noFoodMessageShown = False
+            return
+         EndIf
+
+         index -= 1
+
+      EndWhile
+
+      If (allowAlcohol && IsPlayerHungry(targetWellFed) && CouldConsumeFromList(_SurvivalFood_Alcohol, (hungerRestoreAmounts[0]).GetValue() As Int, targetWellFed))
+         noFoodMessageShown = False
+         return
+      EndIf
+
+   EndIf
+
 
    If (!itemFound && !noFoodMessageShown)
 
@@ -216,6 +250,12 @@ Bool Function ShouldAutoEat()
       LogMessage("Auto-eat is disabled.")
       return False
    EndIf
+
+   ; Do nothing during cutscenes
+   if !Game.IsMenuControlsEnabled()
+		LogMessage("Menu controls are disabled. Food will not be consumed automatically.")
+      return False
+	endIf
 
    ; Prevent auto eat during combat
    If (PlayerRef.IsInCombat())

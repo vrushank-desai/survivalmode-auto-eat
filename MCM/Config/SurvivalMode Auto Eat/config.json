@@ -43,6 +43,19 @@
       "groupBehavior": "disable"
     },
     {
+      "type": "enum",
+      "id": "iFoodPriority:AutoEat",
+      "valueOptions": {
+        "sourceType": "ModSettingInt",
+        "options": ["$SMAE_AutoEat_FoodPriority_Opt_LF", "$SMAE_AutoEat_FoodPriority_Opt_MF"],
+        "defaultValue": 0
+      },
+      "text": "$SMAE_AutoEat_FoodPriority",
+      "help": "$SMAE_AutoEat_FoodPriority_Help",
+      "groupCondition": 1,
+      "groupBehavior": "disable"
+    },
+    {
       "type": "toggle",
       "id": "bAllowAlcohol:AutoEat",
       "valueOptions": {
